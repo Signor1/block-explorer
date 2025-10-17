@@ -5,7 +5,15 @@ import { createAddress } from "@stacks/transactions";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
+/**
+ * A navigation bar component that displays a search bar, a button for connecting to a wallet,
+ * and a button for disconnecting from a wallet. If a user is connected to a wallet,
+ * it also displays a button for quickly viewing the user's own transaction history.
+ *
+ * @returns A JSX element representing the navigation bar.
+ */
 export function Navbar() {
     const router = useRouter();
 
@@ -16,19 +24,22 @@ export function Navbar() {
     // optional chaining (?.) to prevent errors if the data is not yet loaded.
     const stxAddress = userData?.addresses?.stx?.[0]?.address;
 
-    // function that validates the user inputted address
-    // If it is valid, we will redirect the user to the txn history page
+    /**
+     * Handles search bar input. Checks if the input is a valid mainnet Stacks address starting with 'SP'.
+     * If the address is valid, redirects to /SP... which will show the txn history for this address.
+     * If the address is invalid, shows an error toast with the error message.
+     */
     function handleSearch() {
         if (!searchAddress.startsWith("SP")) {
-            return alert("Please enter a mainnet Stacks address");
+            toast.error("Please enter a valid mainnet Stacks address starting with 'SP'");
+            return;
         }
 
         try {
-            // createAddress comes from @stacks/transactions
-            // and throws an error if the given user input is not a valid Stacks address
             createAddress(searchAddress);
         } catch (error) {
-            return alert(`Invalid Stacks address entered ${error}`);
+            toast.error(`Invalid Stacks address entered: ${error}`);
+            return;
         }
 
         // redirect to /SP... which will show the txn history for this address
@@ -55,7 +66,7 @@ export function Navbar() {
             />
 
             <div className="flex items-center gap-2">
-                {/* If userData exists, show the disconnect wallet button, else show the connect wallet button */}
+                {/* If stxAddress is defined, show the disconnect wallet button, else show the connect wallet button */}
                 {stxAddress ? (
                     <div className="flex items-center gap-2">
                         {/* button for quickly viewing the user's own transaction history */}
