@@ -94,7 +94,11 @@ export async function fetchAddressTransactions({
   offset = 0,
 }: FetchAddressTransactionsArgs): Promise<FetchAddressTransactionsResponse> {
   try {
-    const url = `https://api.hiro.so/extended/v2/addresses/${address}/transactions?limit=20&offset=${offset}`;
+    const baseUrl: string = address.startsWith("SP")
+      ? "https://api.hiro.so/extended/v2"
+      : "https://api.testnet.hiro.so/extended/v2";
+
+    const url: string = `${baseUrl}/addresses/${address}/transactions?limit=20&offset=${offset}`;
 
     const response = await fetch(url);
 
