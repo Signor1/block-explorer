@@ -19,7 +19,7 @@ export function Navbar() {
 
     const [searchAddress, setSearchAddress] = useState("");
 
-    const { userData, connectWallet, disconnectWallet } = useStacks();
+    const { userData, network, connectWallet, disconnectWallet } = useStacks();
 
     // optional chaining (?.) to prevent errors if the data is not yet loaded.
     const stxAddress = userData?.addresses?.stx?.[0]?.address;
@@ -30,8 +30,8 @@ export function Navbar() {
      * If the address is invalid, shows an error toast with the error message.
      */
     function handleSearch() {
-        if (!searchAddress.startsWith("SP")) {
-            toast.error("Please enter a valid mainnet Stacks address starting with 'SP'");
+        if (!searchAddress.startsWith("SP") && !searchAddress.startsWith("ST")) {
+            toast.error("Please enter a valid mainnet/testnet Stacks address");
             return;
         }
 
@@ -41,6 +41,8 @@ export function Navbar() {
             toast.error(`Invalid Stacks address entered: ${error}`);
             return;
         }
+
+        setSearchAddress("");
 
         // redirect to /SP... which will show the txn history for this address
         router.push(`/${searchAddress}`);
@@ -54,7 +56,7 @@ export function Navbar() {
 
             <input
                 type="text"
-                placeholder="SP..."
+                placeholder="Address..."
                 className="w-96 rounded-lg bg-gray-700  px-4 py-2 text-sm"
                 onChange={(e) => setSearchAddress(e.target.value)}
                 onKeyDown={(e) => {
@@ -69,6 +71,16 @@ export function Navbar() {
                 {/* If stxAddress is defined, show the disconnect wallet button, else show the connect wallet button */}
                 {stxAddress ? (
                     <div className="flex items-center gap-2">
+                        {network && (
+                            <span
+                                className={`text-xs font-bold capitalize px-2 py-1 border-[1px] rounded-full ${network === 'mainnet'
+                                    ? 'border-green-500 text-green-500'
+                                    : 'border-amber-500 text-amber-500'
+                                    }`}
+                            >
+                                {network}
+                            </span>
+                        )}
                         {/* button for quickly viewing the user's own transaction history */}
                         <button
                             type="button"

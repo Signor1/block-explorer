@@ -118,7 +118,8 @@ export function TransactionDetail({ result }: TransactionDetailProps) {
                         <span className="font-normal">
                             By{" "}
                             <Link
-                                href={`/address/${result.tx.sender_address}`}
+                                href={result.tx.sender_address.startsWith("SP") ? `https://explorer.hiro.so/address/${result.tx.sender_address}` : `https://explorer.hiro.so/address/${result.tx.sender_address}?chain=testnet`}
+                                target="_blank"
                                 className="hover:underline transition-all"
                             >{`${abbreviateAddress(result.tx.sender_address)}`}</Link>
                         </span>
